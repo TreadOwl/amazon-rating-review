@@ -1,19 +1,20 @@
 # Amazon Ratings and Review Analysis
 
-Amazon Review Analysis
+# Amazon Review Analysis
 
-Introduction: -
+# Introduction: -
 The quality of the comments made on internet forums has always suffered due to anonymity of its users. When users’ comments on, for instance, a YouTube video, there is no repercussion for what they say, and the dialog generated is often not helpful. Different websites have tried different methods for extracting more useful comments. Reddit uses an up-vote system, Quora fosters a community that values high quality responses over low quality ones, and Amazon allows for its users to rate the “helpfulness” of reviews left on their products. Amazon’s system, in particular, then allows for the higher rated comments to be displayed at the top of the review forum so that new users can see the top-rated comments in order to help them make their own purchasing decisions.
 Even though Amazon’s helpfulness rating system seems to work on the surface level, poor quality comments still seem to be at the top of their review forms. Having poor quality reviews hurts Amazon’s business, as a major reason that people are willing to buy consumer goods on-line without seeing the items themselves, is that they have access to others people’s opinions of the item. For example, a review at the top of an app called “Friday Night at Freddie’s 4” is as follows:
-“I love this game so much but at first I though it was lame but when I go in the game I can't beat the first night because cause I put it to full volume and I can't here the breathing bonnie strike at 4 am Chica at 5 and plus it not lame it's better than fnaf and fnaf 2 plus get this game when u buy fnaf”
+  “I love this game so much but at first I though it was lame but when I go in the game I can't beat the first night because cause I put it to full volume and I can't here the breathing bonnie strike at 4 am Chica at 5 and plus it not lame it's better than fnaf and fnaf 2 plus get this game when u buy fnaf”
 This comment, despite being at the top of the forum, is difficult to understand, a run on sentence, and full of spelling errors. The reason for the failure is part of the algorithm for determining the order of the reviews relies on how recently the review has been made. The offending review was the most recent, but it’s helpfulness score was far less than previous reviews. This illustrates the difficult balance that must be struck between showing the highest rated reviews, and showing the newest reviews, to be rated by the community. An ideal system would predict if a review is helpful or not, so that poor quality reviews would not need to be displayed the top.
 
-Problem Statement: -
+# Problem Statement: -
 The problem being addressed in this project is the poor quality of Amazon reviews at the top of the forum despite the “helpfulness” rating system. The problem arises from the “free pass” given to new reviews to be placed at the top of the forum, for a chance to be rated by the community. The proposed solution to this problem is to use machine learning techniques to design a system that “pre-rates” new reviews on their “helpfulness” before they are given a position at the top of the forum. This way, poor quality reviews will be more unlikely to be shown at the top of the forum, as they do not get the “free pass” because they are new. The proposed system will use a set of Amazon review data to train itself to predict a helpfulness classification (helpful, or not helpful) for new input data.
 
-Metrics: -
+# Metrics: -
 Since our problem is a binary classification problem (helpful or not helpful). We will use the ‘Receiver Operator Characteristic Area Under the Curve’ or roc_auc score to evaluate our model. The curve is created by plotting the true positive rate (TPR) against the false positive rate (FPR). The area under the curve is used to give a score to the model. If the area under the curve is 0.5, then the TPR is equal to the FPR, and the model is doing no better than random guessing. A perfect model would have an AUC of 1.0, meaning it has 100% TPR.
-Analysis: [In1]
+
+# Analysis: [In1]
 Data Exploration – First we will check if we have already downloaded the dataset. If not, we will download it. [In2]
 We need to extract the data, and convert the data given in "json" to a dataframe in order to perform our analysis. To save time for later we will pickle the file. [In3]
 OK now let’s have a look at the data. [In4]
@@ -30,7 +31,7 @@ This summary looks fine to me. The amount in the helpful_numerator and denominat
 Benchmark:
 As a benchmark for this project we are going to use an out of the box algorithm trained on features generated using NLP techniques. This will be discussed is greater detail in later sections.
 
-Methodology:
+# Methodology:
   Data Pre-processing:
 Data that has had less than 10 ratings will first be trimmed out of the dataset. There are a significant amount of reviews, and many do not face the scrutiny of people reading them. As many of these reviews could be good, but by chance, do not get read and rated, they will be rated negatively by our algorithm and will cause our model to incorrectly classify future "good" reviews. [In9]
 In order to perform our analysis, we wish to determine if a given review text is helpful or not. We need a way to map the existing data to this binary classification. The chosen method is to use a threshold of 'helpful_numerator' divided by 'helpful_denominator'. In other words, the ratio of the people who found the review helpful over the amount of people who rated the review as helpful or unhelpful. If this ratio exceeds a certain threshold value, we can label the training data as 'helpful' = 1, or 'non-helpful' = 0. For this analysis, the threshold is arbitrarily set to 0.5, however, this could be tuned in the future to a higher value in order to better filter the reviews. [In10]
@@ -46,7 +47,7 @@ In order to generate more features, we will use the TF-IDF vectorizer from the s
 * Remove Stop Words- This moves words such as "the" "a" and "it" as shown in the English stop words corpus. These will only clutter up our learning algorithm. Admittingly, sentences without these words are hard to understand, and ideally, they should be kept, but it is again a trade-off.
 * ngrams- Makes groups of words that are 'n' long. E.g the 2-grams for the sentence "The shaggy dog" are [The, shaggy], [The, dog] and [shaggy, dog]. Weving more than that is computationally expensive for my computer. will stick to 2-grams and 1-grams for now. Having more than that is computationally expensive.
 Finally, we will generate TF-IDF scores for each of the stemmed and tokenized words and ngrams. TF-IDF is short for Term Frequency Inverse Document frequency. TF-IDF is a numerical statistic that is intended to reflect how important a word is to a document in a collection or corpus. It is often used as a weighting factor in information retrieval and text mining.
-        TF: Term Frequency, which measures how frequently a term occurs in a document. Since every document is different in length, it is possible that a term would appear much more times in long documents than shorter ones. Thus, the term frequency is often divided by the document length (aka. the total number of terms in the document) as a way of normalization:
+  TF: Term Frequency, which measures how frequently a term occurs in a document. Since every document is different in length, it is possible that a term would appear much more times in long documents than shorter ones. Thus, the term frequency is often divided by the document length (aka. the total number of terms in the document) as a way of normalization:
 TF(t) = (Number of times term t appears in a document) / (Total number of terms in the document).
 IDF: Inverse Document Frequency, which measures how important a term is. While computing TF, all terms are considered equally important. However, it is known that certain terms, such as "is", "of", and "that", may appear a lot of times but have little importance. Thus, we need to weigh down the frequent terms while scale up the rare ones, by computing the following:
 IDF(t) = log_e(Total number of documents / Number of documents with term t in it).
@@ -87,7 +88,7 @@ It seems that the Logistic Regression classifier did the best in our benchmark t
 As expected, the Logistic Regression is the best algorithm in terms of accuracy for all test sizes. It's final score for the area under the ROC curve was 0.7448 and a sample size of ~38,000. In addition, it is the fastest. The training speed and prediction speed were 0.538s and 0.0137s respectively for a sample size of 38,000. As our system needs to consider the trade-off between accuracy and speed, the Logistic Regression algorithm represents the ideal model for our benchmark. Surprisingly, the Random Forest algorithm did quite poorly in our tests. It was both slower and less accurate than the Naive Bayes algorithm.
 
 
-Results
+# Results
 
 Model Evaluation and Validation
 There are several variables that we can examine in order to determine the robustness of our solution. The average ROC_AUC score for 100 different random states is equal to 0.7795, the same as our optimum solution. In this regard, our solution can be considered robust.
@@ -96,13 +97,13 @@ Justification
 Our goal in the beginning of this project was to design a system to automatically classify new Reviews made on amazon products as 'helpful' or 'non-helpful'. Our optimum model will correctly do this 77.8% of the time. This means that 22.2% of the time, our system will not work. As someone managing this project, I would not be happy with this result and would seek to improve it.
 Our algorithm is able to make predictions on the order of 0.01s per prediction. As this was done on my 8 year old laptop it is reasonable to assume that this could be improved significantly with better hardware. Further analysis that takes into account how many reviews are expected to be made would need to take place before I could determine if this is considered reasonable for this project.
 
-Improvements
+# Improvements
 *Grid Search, Cross-Validaiton
 In order to improve the accuracy of our model, the following actions could be taken:
 * Perform more feature engineering, such as proper spell checking for the reviews. This would result in a model that potentially has less features, as certain spelling errors would have been corrected/eliminated.
 * Explore the effect of not doing pre-processing on the reviews. Reviews with poor grammar, and punctuation and improper word endings are more difficult to understand and would possibly lead to people rating them as less helpful. During our project, we did this pre-processing in order to make the algorithms work better; however, maybe feature reduction should have been done in a different way to order to preserve the "incorrect" information.
 
-References
+# References
 1. Inferring networks of substitutable and complementary products. J. McAuley, R. Pandey, J. Leskovec Knowledge Discovery and Data Mining, 2015.
 2. Image-based recommendations on styles and substitutes J. McAuley, C. Targett, J. Shi, A. van den Hengel SIGIR, 2015.
 3. HUI BWU Y. Anti-spam model based on semi-Naive Bayesian classification model. Journal of Computer Applications. 2009;29(3):903-904.
